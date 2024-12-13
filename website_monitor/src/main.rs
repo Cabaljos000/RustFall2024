@@ -2,17 +2,27 @@ mod monitor;
 mod worker_pool;
 
 use std::time::Duration;
+use std::thread;
+use std::fs;
 
 fn main() {
-    let urls = vec![
-        "https://www.rust-lang.org".to_string(),
-        "https://www.google.com".to_string(),
-        "https://www.github.com".to_string(),
-    ];
+    let urls: Vec<_> = match fs::read_to_string("websites.txt") {
+        Ok(content) => content.lines().map(|line| line.to_string()).collect(),
+        Err(err) => {
+            eprintln!("Failed to read websites.txt: {}", err);
+            return;
+        }
+    };
 
-    let worker_count = 2; // Number of threads
+    let worker_count = 10; // Increased for 50+ URL testing
     let timeout = Duration::from_secs(5); // Timeout for requests
     let retries = 3; // Max retries per website
+    let interval = Duration::from_secs(30); // Periodic monitoring interval
 
-    monitor::monitor_websites(urls, worker_count, timeout, retries);
+    // Periodic monitoring
+    loop {
+        monitor::monitor_websites(urls.clone(), worker_count, timeout, retries);
+        println!("Sleeping for {:?} before the next monitoring cycle", interval);
+        thread::sleep(interval);
+    }
 }
