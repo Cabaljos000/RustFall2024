@@ -6,7 +6,6 @@ pub struct WorkerPool {
 }
 
 impl WorkerPool {
-    /// Create a new WorkerPool.
     pub fn new<F>(num_workers: usize, task: F) -> Self
     where
         F: Fn() + Send + 'static + Clone + std::marker::Sync,
@@ -24,7 +23,6 @@ impl WorkerPool {
         WorkerPool { workers }
     }
 
-    /// Join all worker threads.
     pub fn join_all(self) {
         for worker in self.workers {
             worker.join().unwrap();

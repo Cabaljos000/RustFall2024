@@ -4,7 +4,6 @@ use std::sync::mpsc;
 use std::time::{Duration, Instant};
 use crate::worker_pool::WorkerPool;
 
-/// Struct to hold the status of a website.
 #[derive(Debug, Clone)]
 pub struct WebsiteStatus {
     pub url: String,
